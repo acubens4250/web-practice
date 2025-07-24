@@ -7,7 +7,9 @@ function App({ $target, initialState }) {
         $target,
         onsubmit: (text) => {
             const nextState = [...todoList.state, { text }]
-            this.setState(nextState)
+            todoList.setState(nextState)
+
+            loacalStorage.setItem('todos', JSON.stringify(nextState))
         }
     })
 
