@@ -1,9 +1,9 @@
-function TodoList({$target, initialState}) {
-    const $todoList = document.createElement('div');
+export default function TodoList({$target, initialState}) {
+    const $todoList = document.createElement('div')
 
-    $target.appendChild($todoList);
+    $target.appendChild($todoList)
 
-    this.state = initialState;
+    this.state = initialState
 
     this.setState = nextState=> {
         this.state = nextState
@@ -18,5 +18,5 @@ function TodoList({$target, initialState}) {
         `        
     }
 
-    this.render();
+    this.render()
 }
