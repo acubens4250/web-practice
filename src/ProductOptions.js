@@ -16,7 +16,7 @@ export default function ProductOptions({ $target, initialState, onSelect }) {
     }
 
     this.createOptionFullName = ({ optionName, optionPrice, stock}) => {
-        return `${optionName} ${optionPrice> 0 ? `(옵션가 ${optionPrice})` : ''} | ${stock > 0 ? `재고 ${stock}` : '재고없음'} }`
+        return `${optionName} ${optionPrice> 0 ? `(옵션가 ${optionPrice})` : ''} | ${stock > 0 ? `재고 ${stock}` : '재고없음'}`
     }
     
     $select.addEventListener('change', (e) => {
