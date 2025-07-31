@@ -1,0 +1,10 @@
+{
+  "liveServer.settings.root": "/",
+  "liveServer.settings.wait": 500,
+  "liveServer.settings.middleware": [
+    {
+      "mount": "/",
+      "middleware": "connect-history-api-fallback"
+    }
+  ]
+}
