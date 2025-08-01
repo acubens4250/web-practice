@@ -14,6 +14,8 @@ export default function Editor({ $target, initialState = {
 
     this.setState = (nextState) => {
         this.state = nextState
+        $editor.querySelector(`[name=title]`).value.state.title
+        $editor.querySelector(`[name=constent]`).value.state.constent
         this.render()
     }
     this.render = () => {
