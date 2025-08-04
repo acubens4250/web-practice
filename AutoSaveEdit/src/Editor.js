@@ -4,7 +4,7 @@ export default function Editor({ $target, initialState = {
 }, onEditing }) {
     const $editor = document.createElement('div')
 
-    let isinitiallize = false
+    let isinitialized = false
     this.state = initialState
 
     $editor.style.width = '600px'
@@ -14,17 +14,21 @@ export default function Editor({ $target, initialState = {
 
     this.setState = (nextState) => {
         this.state = nextState
-        $editor.querySelector(`[name=title]`).value.state.title
-        $editor.querySelector(`[name=constent]`).value.state.constent
+        const $title = $editor.querySelector(`[name=title]`)
+        const $content = $editor.querySelector(`[name=content]`)
+
+        if ($title) $title.value = this.state.title
+        if ($content) $content.value = this.state.content
+
         this.render()
     }
     this.render = () => {
-        if(!isinitiallize){
+        if(!isinitialized){
             $editor.innerHTML = `
-            <input type="text" nema="title" style="width:600px" value="${this.state.title}"/>
+            <input type="text" name="title" style="width:600px" value="${this.state.title}"/>
             <textarea name="content" style="width:600px;height:400px">${this.state.content}</textarea>
         `
-        isinitiallize = true
+        isinitialized = true
         }        
     }
 

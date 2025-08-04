@@ -17,7 +17,7 @@ export default function PostsPage({
 
     const fetchPosts = async () => {
         const posts = await request('/posts')
-
+        console.log(posts)
         postList.setState(posts)
     }
 
