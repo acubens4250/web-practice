@@ -1,6 +1,7 @@
 import { request } from './api.js'
 import PostList from './PostList.js'
 import LinkButton from './LinkButton.js'
+console.log('PostsPage.setState called')
 
 export default function PostsPage({
     $target,

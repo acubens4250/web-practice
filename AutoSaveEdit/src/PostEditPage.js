@@ -7,7 +7,6 @@ export default function PostEditPage({ $target, initialState }) {
     const $page = document.createElement('div')
 
     this.state = initialState
-
     let postLocalSaveKey = `temp-post-${this.state.postId}`   
 
     const post = getItem(postLocalSaveKey, {
@@ -36,6 +35,8 @@ export default function PostEditPage({ $target, initialState }) {
                         method: 'POST',
                         body: JSON.stringify(post)
                     })
+                    if (!createPost || !createPost.id) return // 안전 처리
+
                     history.replaceState(null, null, `/posts/${createPost.id}`)
                     removeItem(postLocalSaveKey)
 
@@ -49,21 +50,18 @@ export default function PostEditPage({ $target, initialState }) {
                     })
                     removeItem(postLocalSaveKey)
                 }
-            }, 2000)
+            }, 500)
         }
     })
 
     this.setState = async nextState => {
         if(this.state.postId !== nextState.postId) {
             postLocalSaveKey = `temp-post-${nextState.postId}`
-
             this.state = nextState
 
             if(this.state.postId === 'new') {
-                const post = getItem(postLocalSaveKey, {
-                    title: '',
-                    content: ''
-                })
+                // 새 글은 항상 빈 상태로 시작
+                const post = { title: '', content: '' }
                 this.render()
                 editor.setState(post)
             } else {
@@ -90,19 +88,18 @@ export default function PostEditPage({ $target, initialState }) {
         
         if(postId !== 'new') {
             const post = await request(`/posts/${postId}`)
-
             const tempPost = getItem(postLocalSaveKey, {
-                titile: '',
+                title: '',
                 content: ''
             }) 
 
             if(tempPost.tempSaveDate && tempPost.tempSaveDate > post.updated_at){
                 if(confirm('저장되지 않은 임시 데이터가 있습니다. 불러올까요?')) {
                     this.setState({
-                    ...this.state,
-                    post: tempPost
-                })
-                return
+                        ...this.state,
+                        post: tempPost
+                    })
+                    return
                 }
             }
             this.setState({

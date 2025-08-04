@@ -26,10 +26,12 @@ export default function App({ $target }) {
 
     // url에 따라 페이지 렌더링
     this.route = () => {
+        console.log('Current pathname:', window.location.pathname)
+
         $target.innerHTML = ''
         const { pathname } = window.location
 
-        if(pathname === '/') {
+        if(pathname === '/' || pathname.endsWith('/index.html') || pathname.includes('/AutoSaveEdit')) {
             postsPage.setState()
         } else if(pathname.indexOf('/posts/') === 0) {
             const [, , postId] = pathname.split('/')
