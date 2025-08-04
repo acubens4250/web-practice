@@ -1,5 +1,6 @@
 import { request } from './api.js'
 import Editor from './Editor.js'
+import LinkButton from './LinkButton.js'
 import { getItem, removeItem, setItem } from './storage.js'
 
 export default function PostEditPage({ $target, initialState }) {
@@ -33,14 +34,22 @@ export default function PostEditPage({ $target, initialState }) {
                 if(isNew) {
                     const createPost = await request('/posts', {
                         method: 'POST',
-                        body: JSON.stringify(this.state)
+                        body: JSON.stringify(post)
                     })
                     history.replaceState(null, null, `/posts/${createPost.id}`)
                     removeItem(postLocalSaveKey)
-                } else {
 
+                    this.setState({
+                        postId: createPost.id
+                    })
+                } else {
+                    await request(`/posts/${post.id}`, {
+                        method:'PUT',
+                        body: JSON.stringify(post)
+                    })
+                    removeItem(postLocalSaveKey)
                 }
-            }, 500)
+            }, 2000)
         }
     })
 
@@ -49,7 +58,17 @@ export default function PostEditPage({ $target, initialState }) {
             postLocalSaveKey = `temp-post-${nextState.postId}`
 
             this.state = nextState
-            await fetchPost()
+
+            if(this.state.postId === 'new') {
+                const post = getItem(postLocalSaveKey, {
+                    title: '',
+                    content: ''
+                })
+                this.render()
+                editor.setState(post)
+            } else {
+                await fetchPost()
+            }            
             return
         }
 
@@ -92,4 +111,12 @@ export default function PostEditPage({ $target, initialState }) {
             })
         }
     }
+
+    new LinkButton({
+        $target: $page,
+        initialState: {
+            text: '목록으로 이동',
+            link: '/'
+        }        
+    })
 }
