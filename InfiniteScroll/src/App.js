@@ -3,18 +3,21 @@ import { request } from './api.js'
 
 export default function App({ $target }) {
     const $h1 = document.createElement('h1')
-    $h1.innerHTML = 'Cat Photos!'
+    $h1.innerHTML = 'Random Photos!'
     $h1.style.textAlign = 'center'
     $target.appendChild($h1)
 
     this.state = {
         limit: 5,
-        start: 0,
+        nextStart: 0,
         photos: [],
     }
     const photoListComponent = new PhotoList({
         $target,
-        initialState: this.state.photos
+        initialState: this.state.photos,
+        onScrollEnded: async () => {
+            await fetchPhotos()
+        }
     })
 
     this.setState = (nextState) => {
@@ -23,11 +26,13 @@ export default function App({ $target }) {
     }
 
     const fetchPhotos = async () => {
-    const { limit, start } = this.state
-    const photos = await request(`/photos?_limit=${limit}&_start=${start}`)
+    const { limit, nextStart } = this.state
+    const photos = await request(`/photos?_limit=${limit}&_start=${nextStart}`)
     this.setState({
         ...this.state,
-        photos
+        nextStart: nextStart + limit,
+        photos: [ ...this.state.photos, ...photos ]
+        //photos: this.state.photo.concat(photos)
     })
     }
 
