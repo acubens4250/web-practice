@@ -23,7 +23,7 @@ export default function App({ $target }) {
     }
 
     const fetchPhotos = async() => {
-        const photos = await request(`/cat-photos?_limit=5&start=0`)
+        const photos = await request(`/cat-photos?_limit=5&_start=0`)
         this.setState({
             ...this.state,
             photos
