@@ -1,8 +1,24 @@
 export default function PhotoList({ $target, initialState, onScrollEnded }) {
     let isInitialize = false
-    const $photoList = document.createElement('ul')
+
+    const $photoList = document.createElement('div')
     $target.appendChild($photoList)
-    this.state = initialState || [] 
+    this.state = initialState
+
+    const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+            if(entry.isIntersecting && !this.state.isLoading) {
+                console.log('webpage end!!!!', entry)
+                if(this.state.totalCount > this.state.photos.length) {
+                    onScrollEnded()
+                }
+            }
+        })
+    }, {
+        threshold: 0.5
+    })
+
+    let $lastLi = null
 
     this.setState = nextState => {
         this.state = nextState
@@ -13,7 +29,6 @@ export default function PhotoList({ $target, initialState, onScrollEnded }) {
         if(!isInitialize) {
             $photoList.innerHTML = `
             <ul class="PhotoList_photos"></ul>
-            <button class="photoList_loadmore" style="width:100%; height: 100px; font-size: 30px">Load More</button>
             `
             isInitialize = true
         }
@@ -21,29 +36,35 @@ export default function PhotoList({ $target, initialState, onScrollEnded }) {
         const $photos = $photoList.querySelector('.PhotoList_photos')
         
         photos.forEach(photo => {
-            if ($photos.querySelector(`[data-id="${photo.id}"]`) === null) {
+            if ($photos.querySelector(`li[data-id="${photo.id}"]`) === null) {
                 const $li = document.createElement('li')
                 $li.setAttribute('data-id', photo.id)
-                $li.style = 'list-style: none;'
+                $li.style = 'list-style: none; min-height: 400px;'
                 $li.innerHTML = `<img width="100%" src="https://picsum.photos/200?random=${photo.id}" alt="${photo.title}" />`
 
                 $photos.appendChild($li)
             }
         })
-    }
 
+        const $nextLi = $photos.querySelector('li:last-child')
+
+        if($nextLi !== null) {
+            if($lastLi !== null) {
+                observer.unobserve($lastLi)
+            }
+
+            $lastLi = $nextLi
+            observer.observe($lastLi)
+        }
+    }
+    
     this.render()
 
-    $photoList.addEventListener('click', e => {
-        if(e.target.className === 'photoList_loadmore' && !this.state.isLoading) {
-            onScrollEnded()
-        }
-    })
-
     window.addEventListener('scroll', () => {
+        const { isLoading, totalCount, photos } = this.state
         const isScrollEnded = (window.innerHeight + window.scrollY) + 100 >= document.body.offsetHeight
 
-        if(isScrollEnded && !this.state.isLoading) {
+        if(isScrollEnded && !isLoading && photos.length < totalCount) {
             onScrollEnded()
         }
     })

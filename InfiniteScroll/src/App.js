@@ -17,7 +17,8 @@ export default function App({ $target }) {
         $target,
         initialState:{
             isLoading: this.state.isLoading,
-            photos:this.state.photos
+            photos:this.state.photos,
+            totalCount: this.state.totalCount
         },
         onScrollEnded: async () => {
             await fetchPhotos()
@@ -28,27 +29,42 @@ export default function App({ $target }) {
         this.state = nextState
         photoListComponent.setState({
             isLoading: this.state.isLoading,
-            photos:nextState.photos
+            photos:nextState.photos,
+            totalCount: this.state.totalCount
         })
     }
 
     const fetchPhotos = async () => {
-    this.setState({
-        ...this.state,
-        isLoading: true
-    })
-    const { limit, nextStart } = this.state
+        if (this.state.photos.length >= this.state.totalCount) {
+        return
+    }
+        this.setState({
+            ...this.state,
+            isLoading: true
+        })
+        const { limit, nextStart } = this.state
 
-    const photos = await request(`/photos?_limit=${limit}&_start=${nextStart}`)
-    this.setState({
-        ...this.state,
-        nextStart: nextStart + limit,
-        photos: [ ...this.state.photos, ...photos ],
-        //photos: this.state.photo.concat(photos)
-        isLoading: false
-    })
+        const photos = await request(`/photos?_limit=${limit}&_start=${nextStart}`)
+        this.setState({
+            ...this.state,
+            nextStart: nextStart + limit,
+            photos: [ ...this.state.photos, ...photos ],
+            //photos: this.state.photo.concat(photos)
+            isLoading: false
+        })
     }
 
-    fetchPhotos()
+    const initialize = async () => {
+        const totalCount = 17
+
+        this.setState({
+            ...this.state,
+            totalCount
+        })
+
+        await fetchPhotos()
+    }
+
+    initialize()
 }
 
