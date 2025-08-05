@@ -17,10 +17,10 @@ export default function PhotoList({ $target, initialState, onScrollEnded }) {
             `
             isInitialize = true
         }
-
+        const { photos } = this.state
         const $photos = $photoList.querySelector('.PhotoList_photos')
         
-        this.state.forEach(photo => {
+        photos.forEach(photo => {
             if ($photos.querySelector(`[data-id="${photo.id}"]`) === null) {
                 const $li = document.createElement('li')
                 $li.setAttribute('data-id', photo.id)
@@ -35,7 +35,15 @@ export default function PhotoList({ $target, initialState, onScrollEnded }) {
     this.render()
 
     $photoList.addEventListener('click', e => {
-        if(e.target.className === 'photoList_loadmore') {
+        if(e.target.className === 'photoList_loadmore' && !this.state.isLoading) {
+            onScrollEnded()
+        }
+    })
+
+    window.addEventListener('scroll', () => {
+        const isScrollEnded = (window.innerHeight + window.scrollY) + 100 >= document.body.offsetHeight
+
+        if(isScrollEnded && !this.state.isLoading) {
             onScrollEnded()
         }
     })
