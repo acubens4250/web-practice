@@ -3,7 +3,7 @@ import { request } from './api.js'
 
 export default function App({ $target }) {
     const $h1 = document.createElement('h1')
-    $h1.innerHTML - 'Cat Photos!'
+    $h1.innerHTML = 'Cat Photos!'
     $h1.style.textAlign = 'center'
     $target.appendChild($h1)
 
@@ -22,13 +22,15 @@ export default function App({ $target }) {
         photoListComponent.setState(nextState.photos)
     }
 
-    const fetchPhotos = async() => {
-        const photos = await request(`/cat-photos?_limit=5&_start=0`)
-        this.setState({
-            ...this.state,
-            photos
-        })
+    const fetchPhotos = async () => {
+    const { limit, start } = this.state
+    const photos = await request(`/photos?_limit=${limit}&_start=${start}`)
+    this.setState({
+        ...this.state,
+        photos
+    })
     }
 
     fetchPhotos()
 }
+
