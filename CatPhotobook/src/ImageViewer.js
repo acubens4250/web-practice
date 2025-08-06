@@ -1,4 +1,4 @@
-export default function ImageViewer({ $target }) {
+export default function ImageViewer({ $target, onClose }) {
     const $imageViewer = document.createElement('div') 
     $imageViewer.className = 'ImageViewer Modal'
     $target.appendChild($imageViewer)
@@ -19,7 +19,7 @@ export default function ImageViewer({ $target }) {
         $imageViewer.innerHTML = ''
         return
         }
-        
+
         $imageViewer.innerHTML = `
             <div class="content">
                 <img src="${this.state.selectedImageUrl}">
@@ -28,4 +28,16 @@ export default function ImageViewer({ $target }) {
     }
 
     this.render()
+
+    window.addEventListener('keyup', (e) => {
+        if(e.key === 'Escape') {
+            onClose()
+        }
+    })
+
+    $imageViewer.addEventListener('click', (e) => {
+        if(Array.from(e.target.classList).includes('Modal')) {
+            onClose()
+        }
+    })
 }

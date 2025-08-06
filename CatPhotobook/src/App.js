@@ -2,8 +2,6 @@ import { request } from './api.js'
 import ImageViewer from './ImageViewer.js'
 import Nodes from './Nodes.js'
 
-
-
 export default function App({ $target }) {
     this.state = {
         isRoot: true,
@@ -30,7 +28,13 @@ export default function App({ $target }) {
     })
 
     const imageViewer = new ImageViewer({
-        $target
+        $target,
+        onClose: () => {
+            this.setState({
+                ...this.state,
+                selectedImageUrl: null
+            })
+        }
     })
 
     this.setState = nextState => {
