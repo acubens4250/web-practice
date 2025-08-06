@@ -1,6 +1,6 @@
 const API_END_POINT = 'https://cat-photos.edu-api.programmers.co.kr'
 
-export const request = async (url, options = {}, retryCount = 3) => {
+export const request = async (url, options = {}, retryCount = 5) => {
     try {
         const res = await fetch(`${API_END_POINT}${url}`, options)
         if (!res.ok) throw new Error(`API Call Fail: ${res.status}`)
