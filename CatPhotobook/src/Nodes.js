@@ -1,4 +1,4 @@
-export default function Nodes({ $target, initialState, onClick }) {
+export default function Nodes({ $target, initialState, onClick, onPrevClick }) {
     const $nodes = document.createElement('div')
     $target.appendChild($nodes)
     $nodes.classList.add('nodes')
@@ -35,12 +35,14 @@ export default function Nodes({ $target, initialState, onClick }) {
 
     $nodes.addEventListener('click', e => {
         const $node = e.target.closest('.Node')
+        if (!$node) return // 클릭한 곳이 Node가 아니면 종료
 
         const { id } = $node.dataset
 
         // id가 없는 경우 뒤로가기 처리
         if(!id) {
-
+            onPrevClick()
+            return
         }
 
         const node = this.state.nodes.find(node => node.id === id)
@@ -48,7 +50,7 @@ export default function Nodes({ $target, initialState, onClick }) {
         if(node) {
             onClick(node)
         } else{
-            alert('올바르지 않은 Node입니다.')
+            onPrevClick()
         }
     })
 }
