@@ -1,4 +1,4 @@
-export default function Keyword ({ $target, initialState, onKeywordInput }) {
+export default function Keyword({ $target, initialState, onKeywordInput, onEnter }) {
     const $keyword = document.createElement('input')
     $keyword.className = 'Keyword'
 
@@ -11,12 +11,14 @@ export default function Keyword ({ $target, initialState, onKeywordInput }) {
         $keyword.value = this.state.value
     }
 
-    $keyword.addEventListener('keyup', e=> {
-        if(e.keyt === 'Enter') {
+    $keyword.addEventListener('keyup', e => {
+        if (e.key === 'Enter') {
             e.preventDefault()
-            ondragenter()
-        } else{
-                    onKeywordInput(e.target.value)
+            if (onEnter) {
+                onEnter()
+            }
+        } else {
+            onKeywordInput(e.target.value)
         }
     })
 }
