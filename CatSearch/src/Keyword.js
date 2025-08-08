@@ -12,6 +12,11 @@ export default function Keyword ({ $target, initialState, onKeywordInput }) {
     }
 
     $keyword.addEventListener('keyup', e=> {
-        onKeywordInput(e.target.value)
+        if(e.keyt === 'Enter') {
+            e.preventDefault()
+            ondragenter()
+        } else{
+                    onKeywordInput(e.target.value)
+        }
     })
 }

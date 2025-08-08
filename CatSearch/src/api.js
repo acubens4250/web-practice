@@ -6,10 +6,13 @@ export const request = async(url) => {
 
         if(!res.ok) {
             throw new Error('API 호출에 실패했습니다.')
+            return null
         }
         
         return await res.json()
+
     } catch (e) {
-        alert(e.message)
+        console.error('[API ERROR]', e)
+        return null
     }
 }

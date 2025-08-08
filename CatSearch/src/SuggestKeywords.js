@@ -11,15 +11,16 @@ export default function SuggestKeywords({ $target, initialState, onKeywordSelect
     }
 
     this.render = () => {
+        const { keywords, cursor } = this.state
         $suggest.innerHTML = `
         <ul>
-            ${this.state.keywords.map(keyword => `
-                <li>${keyword}</li>
+            ${keywords.map( (keyword, i) => `
+                <li class="${cursor === i ? 'active' : ''}">${keyword}</li>
             `).join('')}
         </ul>
         `
 
-        $suggest.style.display = this.state.keywords.length > 0 ? 'block' : 'none'
+        $suggest.style.display = keywords.length > 0 ? 'block' : 'none'
     }
     this.render()
 
@@ -33,12 +34,25 @@ export default function SuggestKeywords({ $target, initialState, onKeywordSelect
 
     window.addEventListener('keydown', (e) => {
         if($suggest.style.display !== 'none') {
-            // arrow down을 입력했을 때
-            if(e.key === 'Arrow Up'){
-                
-            }
+            const { key } = e
             // arrwo up을 입력했을 때
+            if(key === 'ArrowUp'){
+                const nextCursor = this.state.cursor - 1
+                this.setState({
+                    ...this.state,
+                    cursor: nextCursor < 0 ? this.state.keywords.length-1 : nextCursor
+                })
+            // arrow down을 입력했을 때
+            } else if(key === 'ArrowDown') {
+                const nextCursor = this.state.cursor + 1
+                this.setState({
+                    ...this.state,
+                    cursor: nextCursor > this.state.keywords.length - 1 ? 0 : nextCursor
+                })
             // enter를 입력했을 때
+            } else if(key === 'Enter'){
+                onKeywordSelect(this.state.keywords[this.state.cursor])
+            }            
         }
     })
 }
