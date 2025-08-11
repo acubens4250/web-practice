@@ -1,7 +1,8 @@
 export default function TodoList({ $target, initialState}) {
     const $todoList = document.createElement('div')
-    $todoList.setAttribute('draggable', true)
+    $todoList.setAttribute('droppable', 'true')
     $target.appendChild($todoList)
+    
     this.state = initialState
 
     this.setState = nextState => {
@@ -20,15 +21,15 @@ export default function TodoList({ $target, initialState}) {
         `
     }
 
-    this.render()
+    this.render() 
 
     $todoList.addEventListener('dragover', e => {
-        e.dataTransfer.dropEffect = 'copy'
-        console.log(e.dataTransfer)
+        e.preventDefault()
+        e.dataTransfer.dropEffect = 'move'
+    })
 
-        $todoList.addEventListener('drop', e => {
-            e.preventDefault()
-
-        })
+    $todoList.addEventListener('drop', e => {
+        e.preventDefault()
+        console.log('drop!!', e.dataTransfer)
     })
 }

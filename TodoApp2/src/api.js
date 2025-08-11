@@ -1,4 +1,4 @@
-const API_END_POINT = 'https://mwu2.todo.edu-api.programmers.co.kr/users'
+const API_END_POINT = 'https://mwu2.todo.edu-api.programmers.co.kr/acubens'
 
 export const request = async(url) => {
     try {
