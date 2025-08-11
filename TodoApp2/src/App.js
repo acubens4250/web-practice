@@ -11,6 +11,24 @@ export default function App({ $target }) {
         initialState: {
             title: '완료되지 않은 일들',
             todos: []
+        },
+        onDrop: async (todoId) => {
+            console.log(`완료처리 된 Todo에서 ${todoId}가 넘어옴!`)
+
+            const nextTodos = [...this.state.todos]
+            const todoIndex = nextTodos.findIndex(todo => todo._id === todoId)
+
+            nextTodos[todoIndex].inCompleted = false
+            this.setState({
+                ...this.state,
+                todos: nextTodos
+            })
+
+            await request(`/${todoId}/toggle`, {
+                method: 'PUT'
+            })
+
+            await fetchTodos()
         }
     })
 
@@ -19,6 +37,24 @@ export default function App({ $target }) {
         initialState: {
             title: '완료된 일들',
             todos: []
+        },
+        onDrop: async (todoId) => {
+            const nextTodos = [...this.state.todos]
+            const todoIndex = nextTodos.findIndex(todo => todo._id === todoId)
+
+            nextTodos[todoIndex].inCompleted = true
+            this.setState({
+                ...this.state,
+                todos: nextTodos
+            })
+            
+            console.log(`미완료처리 된 Todo에서 ${todoId}가 넘어옴!`)
+            
+            await request(`/${todoId}/toggle`, {
+                method: 'PUT'
+            })
+
+            await fetchTodos()
         }
     })
 
