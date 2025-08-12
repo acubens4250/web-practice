@@ -31,7 +31,7 @@ export default function App({ $target }) {
     }
 
     const handleTodoRemove = (todoId) => {
-        const nextTodos = [...this.state.todo]
+        const nextTodos = [...this.state.todos]
 
         const todoIndex = nextTodos.findIndex(todo => todo._id === todoId)
 

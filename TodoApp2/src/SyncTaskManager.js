@@ -9,13 +9,13 @@ export default function SyncTaskManager() {
     }
 
     this.removeTasks = (urlPattern) => {
-        tasks = task.filter(task => !task.url.includes(urlPattern))
+        tasks = tasks.filter(task => !task.url.includes(urlPattern))
         console.log(tasks)
     }
 
     this.run = async () => {
         if(tasks.length > 0) {
-            const task = task.shift()
+            const task = tasks.shift()
 
             await request(task.url, {
                 method: task.method || "GET"
