@@ -23,25 +23,64 @@ function Plus(a : number, b : number) : number{
     return a + b;
 }
 
+
+// 열거형 : 사용자 정의 타입
+enum GenderType {
+    Male,
+    Female
+}
 interface Student{
     stdId : number;
     stdName : string;
-    age : number;
-    gender : string;
+    age? : number;  // 선택적 프로퍼티
+    gender : GenderType;
     course : string;
     completed : boolean;
+    //setName(name : string) : void;
+    setName : (name : string) => void;
+    //getName : () => string;
 }
 
-function getInfo(id : number) : Student 
-{
-    return {
-        stdId : id,
-    stdName : 'kim',
-    age : 24,
-    gender : 'female',
-    course : 'CS',
-    completed : true
+class MyStudent implements Student {
+    stdId = 90011;
+    stdName = 'park';
+    age = 30;  
+    gender = GenderType.Female;
+    course = 'node.js';
+    completed = true;
+
+    setName(name : string) : void{
+        this.stdName = name;
+        console.log('이름 설정 : ' + this.stdName);
     }
 }
 
-console.log(getInfo(5678));
+const myInstance = new MyStudent();
+myInstance.setName('앨리스');
+
+// function getInfo(id : number) : Student 
+// {
+//     return {
+//         stdId : id,
+//     stdName : 'kim',
+//     age : 24,
+//     gender : 'female',
+//     course : 'CS',
+//     completed : true
+//     }
+// }
+
+// function setInfo(student : Student) : void {
+//     console.log(student)
+// }
+
+// setInfo({
+//     stdId : 90011,
+//     stdName : 'kim',
+//     age : 24,
+//     gender : 'female',
+//     course : 'CS',
+//     completed : true
+// })
+
+// console.log(getInfo(5678));
