@@ -1,124 +1,101 @@
-import { request } from './api.js'
-import ImageViewer from './ImageViewer.js'
-import Nodes from './Nodes.js'
-import Loading from './Loading.js'
-import Breadcrumb from './Breadcrumb.js'
+import { request } from "./api.js"
+import storage from "./storage.js"
+import Header from "./Header.js"
+import SearchResults from "./SearchResult.js"
+import SuggestKeywords from "./SuggestKeywords.js"
+import debounce from "./debounce.js"
 
-export default function App({ $target }) {
+export default function App({ $target }){
     this.state = {
-        isRoot: true,
-        isLoading: true,
-        nodes: [],
-        paths: []
+        keyword: '',
+        keywords: [],
+        catImages: []
     }
-    const loading = new Loading({
-        $target
-    })
 
-    const breadcrumb = new Breadcrumb({
-        $target,
-        initialState: this.state.paths,
-        onClick: async (id) => {
-            // 클릭한 경로 외에 paths를 날려준다.            
-            if(id) {
-                const nextPaths = id ? [...this.state.paths] : []
-                const pathIndex = nextPaths.findIndex(path => path.id === id)
-                this.setState({
-                    ...this.state,
-                    paths: nextPaths.slice(0, pathIndex + 1)
-                })
-            } else {
-                this.setState({
-                    ...this.state,
-                    paths: []
-                })
-            }
-
-            await fetchNodes(id)
-        }
-    })
-
-    const nodes = new Nodes({
-        $target,
-        initialState: {
-            isRoot: this.state.isRoot,
-            nodes: this.state.nodes,
-            selectedImageUrl: null
-        },
-        onClick: async (node) => {
-            if(node.type === 'DIRECTORY') {
-                await fetchNodes(node.id)
-                this.setState({
-                    ...this.state,
-                    paths: [...this.state.paths, node]
-                })
-            }     
-
-            if(node.type === 'FILE') {
-                this.setState({
-                    ...this.state,
-                    selectedImageUrl: `https://cat-photos-dev-serverlessdeploymentbucket-fdpz0swy5qxq.s3.ap-northeast-2.amazonaws.com/public/${node.filePath}`
-                })
-            }       
-        },
-        onPrevClick: async () => {
-            const nextPaths = [...this.state.paths]
-            nextPaths.pop()
-            this.setState({
-                ...this.state,
-                paths: nextPaths
-            })
-
-            if(nextPaths.length === 0) {
-                await fetchNodes()
-            } else {
-                await fetchNodes(nextPaths[nextPaths.length - 1].id)
-            }
-        }
-    })
-
-    const imageViewer = new ImageViewer({
-        $target,
-        onClose: () => {
-            this.setState({
-                ...this.state,
-                selectedImageUrl: null
-            })
-        }
-    })
+    this.cache = storage.getItem('keywords_cache', {})
 
     this.setState = nextState => {
         this.state = nextState
 
-        nodes.setState({
-            isRoot: this.state.isRoot,
-            nodes: this.state.nodes
+        header.setState({
+            keyword: this.state.keyword
+        })
+        
+        suggestKeywords.setState({
+            keywords: this.state.keywords
         })
 
-        imageViewer.setState({
-            selectedImageUrl: this.state.selectedImageUrl
-        })
-
-        loading.setState(this.state.isLoading)
-
-        breadcrumb.setState(this.state.paths)
+        if(this.state.catImages.length > 0) {
+            searchResults.setState(this.state.catImages)
+        }
     }
+    const header = new Header({ 
+        $target, 
+        initialState: {
+            keyword: this.state.keyword
+        },
+        onKeywordInput: debounce(async (keyword) => {
+            if(keyword.trim().length > 1) {
+                let keywords = null
 
-    const fetchNodes = async (id) => {
-        this.setState({
-            ...this.state,
-            isLoading: true
-        })
-        const nodes = await request(id ? `/${id}` : '/')
+                if(this.cache[keyword]) {
+                    keywords = this.cache[keyword]
+                } else {
+                    keywords = await request(`/keywords?q=${keyword}`)
+                    this.cache[keyword] = keywords
+                    storage.setItem('keywords_cache', this.cache)
+                }
 
-        this.setState({
-            ...this.state,
-            nodes: nodes || [],
-            isRoot: id ? false : true,
-            isLoading: false
-        })
+                this.setState({
+                    ...this.state,
+                    keywords
+                })
+            }
+        }, 300),
+        onEnter: () => {
+            fetchCatsImage()
+        }
+    })
+
+    const suggestKeywords = new SuggestKeywords({
+        $target,
+        initialState: {
+            keywords: this.state.keywords,
+            cursor: -1
+        },
+        onKeywordSelect: (keyword) => {
+            this.setState({
+                ...this.state,
+                keyword,
+                keywords: []
+            })
+            fetchCatsImage()
+        }
+    })  
+
+    const searchResults = new SearchResults({
+        $target,
+        initialState: this.state.catImages
+    })
+
+    const fetchCatsImage = async () => {
+        const encodedKeyword = encodeURIComponent(this.state.keyword)
+        const res = await request(`/search?q=${encodedKeyword}`)
+
+        if (res && res.data) {
+            this.setState({
+                ...this.state,
+                catImages: res.data,
+                keywords: []
+            })
+        } else {
+            // 검색 결과가 없거나 API 실패 시
+            this.setState({
+                ...this.state,
+                catImages: [],
+                keywords: []
+            })
+            alert('해당 키워드에 대한 이미지를 불러오지 못했습니다.')
+        }
     }
-
-    fetchNodes()
-
 }
