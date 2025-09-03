@@ -1,3 +1,22 @@
+div{
+  box-sizing: border-box;
+}
+
+.title-nav{
+  background-color: #282c34;
+  width: 100%;
+  display: flex;
+  padding: 20px;
+  color: white;
+}
+
+.list{
+  text-align: left;
+  padding-left: 20px;
+  border-bottom: 1px solid gray;
+}
+
+
 .App {
   text-align: center;
 }
