@@ -20,15 +20,42 @@ const App : React.FC = () =>{
     {id : 3, title : '커피 마실 용기', content : '모든 고민은 삶에서 비롯된다.', date : '2026-01-01'}
   ]);
 
-  const [like, setLike] = useState(0);
-  const[detail, setDetail] = useState<boolean>(false)
+  let [like, setLike] = useState<number[]>([0, 0, 0]);
 
-  const handleLikeClick = () : void => {
-    setLike(like + 1);
+  const[detail, setDetail] = useState<boolean>(false);
+
+  let [index, setIndex] = useState<number>(0);
+
+  let [input, setInput] = useState<string>('');
+
+
+
+  const handleLikeClick = (postIndex : number) : void => {
+    let cplike = [...like];
+    cplike[postIndex] = cplike[postIndex] + 1;
+    setLike(cplike);
   }
 
-    const handleDetailClick = () : void => {
+  const handleDetailClick = (idx : number) : void => {
     setDetail(!detail);
+    setIndex(idx);
+  }
+
+  const handleAddClick = () : void => {
+    const newPost : Post = {
+      id : post.length + 1,
+      title : input,
+      content : '새로운 글이 등록되었습니다.',
+      date : new Date().toISOString().split('T')[0] // 현재 날짜를 YYYY-MM-DD 형식으로
+    };
+
+    setPost((prevPosts)=>[...prevPosts, newPost]);
+  }
+
+    const handleDeleteClick = (idx : number) : void => {
+      let cppost = [...post];
+      cppost.splice(idx, 1);
+      setPost(cppost);
   }
 
   return (
@@ -36,17 +63,32 @@ const App : React.FC = () =>{
       <div className='title-nav'>
         <h1>{title}</h1>
       </div>
-      <div className='container'>
 
-        <div className='board'>
-        
+      <div className='container'>
+        <div className='board'>       
+          <input type = 'text' onChange={
+            (e)=>{
+              console.log(e.target.value);
+              setInput(e.target.value);
+            }
+          }></input>
+          <button onClick={()=>{handleAddClick()}}>추가</button>
+        </div>
+      </div>
+
+      <div className='container'>
+        <div className='board'>        
           {
             post.map(function(param : Post, idx){
               return(
                 <div className='post' key = {idx}>
-                  <h3 onClick = {handleDetailClick}>{post[idx].title}
-                  <span onClick = {handleLikeClick}> ❤️</span>{like}</h3>
+                  <h3 onClick = {()=>{handleDetailClick(idx)}}>{post[idx].title}
+                  <span onClick = {(e)=>{
+                    handleLikeClick(idx)
+                    e.stopPropagation(); // 이벤트 버블링 방지
+                    }}> ❤️</span>{like[idx]}</h3>
                   <p>{post[idx].date}</p>
+                  <button className = 'delbutton' onClick={()=>handleDeleteClick(idx)}>삭제</button>
                 </div>
               )
             })
@@ -56,7 +98,7 @@ const App : React.FC = () =>{
       </div>
 
       {
-        detail === true ? <Detail></Detail> : null
+        detail === true ? <Detail post = {post} index = {index}></Detail> : null
       }
 
 
@@ -69,6 +111,11 @@ const App : React.FC = () =>{
       {/* {<Timer></Timer>} */}
     </div>
   );
+}
+
+interface DetailProps{
+  post : Post[];
+  index : number;
 }
 
 const Timer : React.FC = () => {
@@ -89,13 +136,13 @@ const Timer : React.FC = () => {
   )
 }
 
-const Detail : React.FC = () => {
+const Detail : React.FC <DetailProps>= ({post, index}) => {
   return(
     // html 내용
     <div className='detail'>
-        <h3>제목</h3>
-        <h4>내용</h4>
-        <p>날짜</p>
+        <h3>{post[index].title}</h3>
+        <h4>{post[index].content}</h4>
+        <p>{post[index].date}</p>
       </div>
   )
 }

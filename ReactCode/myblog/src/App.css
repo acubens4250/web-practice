@@ -1,3 +1,52 @@
+.delbutton{
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid red;
+  color: red;
+  background-color: white;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+.delbutton:hover{
+  background-color: red;
+  color: white;
+  cursor: pointer;
+}
+
+button{
+  display: inline-block;
+  padding: 10px 20px;
+  font-size: 12px;
+  font-weight: bold;
+  border: 1px solid #3498db;
+  color: #3498db;
+  background-color: white;
+  border-radius: 5px;
+  margin-left: 10px;
+}
+
+button:hover{
+  background-color: #3498db;
+  color: white;
+  cursor: pointer;
+}
+
+input{
+  padding: 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin-bottom: 10px;
+  margin-top: 10px;
+}
+
+input:focus{
+  border-color: #3498db;
+}
+
 .container{
   max-width : 800px;
   margin : 0 auto;
