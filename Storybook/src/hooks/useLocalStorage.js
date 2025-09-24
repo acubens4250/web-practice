@@ -1,0 +1,27 @@
+
+
+const useLocalStorage = (key, initialValule) => {
+    const [storedValue, setStoredValue] = useState (() => {
+        try {
+            const item = localStorage.getItem(key);
+            return item ? JSON.parse(item) : initialValule;
+        }
+        catch (error) {
+            console.log(error);
+            return initialValule
+        }
+    })
+
+    const setValue = (value) => {
+        try {
+            setStoredValue(value);
+            localStorage.setItem(key, JSON.stringify(value));
+        }
+        catch (error) {
+            console.log(error);
+        }
+    }
+    return [storedValue, setValue];
+};
+
+export default useLocalStorage;
